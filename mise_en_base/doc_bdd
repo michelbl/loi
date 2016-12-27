@@ -5,9 +5,8 @@
 * JORF : Tout ce qui est parru au JORF
 * LEGI : Une partie seulement de ce qui est paru au JORF, mais avec les évolutions (versionnement)
 
-== Types de fichiers
+== JORF plat
 
-Les chemins sont données avec la hiérarchie plate :
 * jorf_plat
 ** article : contient JORFARTIxxxxxxxxxxxx.xml
 ** conteneur : contient JORFCONTxxxxxxxxxxxx.xml
@@ -15,14 +14,3 @@ Les chemins sont données avec la hiérarchie plate :
 ** texte (les fichiers de ces 2 dossiers se correspondent par leur nom)
 *** struct : contient JORFTEXTxxxxxxxxxxxx.xml
 *** version : contient JORFTEXTxxxxxxxxxxxx.xml
-* legi (1624319 fichiers, dont 199424 LEGITEXT..., 177124 LEGISCTA..., 124771 LEGIARTI...)
-** code_en_vigueur_LEGI (435387 fichiers)
-** code_non_vigueur_LEGI (14692 fichiers)
-** TNC_en_vigueur_JORF (868528 fichiers)
-** TNC_en_vigueur_LEGI (15807 fichiers)
-** TNC_non_vigueur_JORF (264268 fichiers)
-** TNC_non_vigueur_LEGI (25637 fichiers), et pour chacun de ces 6 dossiers :
-*** LEGITEXTxxxxxxxxxxxx ou JORFARTIxxxxxxxxxxxx
-**** LEGIARTIxxxxxxxxxxxx.xml, LEGISCTAxxxxxxxxxxxx.xml
-**** struct : contient LEGITEXTxxxxxxxxxxxx.xml
-**** version : contient LEGITEXTxxxxxxxxxxxx.xml
