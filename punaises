@@ -6,3 +6,9 @@ JO du 5/7/1999 inaccessible sur https://www.legifrance.gouv.fr/initRechJO.do
 Données identiques pour deux textes différents : JORFTEXT000000167078 et JORFTEXT000000343285
 Doc technique absente pour la base JORF
 DOC pas à jour pour la base LEGI : ID_ELI et ELI_ALIAS (META_COMMUN)
+Un texte qui a changé de nature : JORFTEXT000000510005
+2 textes qui ont changé de numéros : JORFTEXT000000367879, JORFTEXT000000332963
+7 textes qui ont plusieurs dates de signature (ex: JORFTEXT000000841628, JORFTEXT000000392850)
+54 textes qui ont différentes dates de publication (ex: JORFTEXT000000644046, JORFTEXT000000412879)
+id qui a 2 cid : LEGITEXT000006077178 appartient à JORFTEXT000000160046 et à JORFTEXT000000343573 (https://www.legifrance.gouv.fr/affichTexte.do?cidTexte=JORFTEXT000000160046&categorieLien=id)
+
