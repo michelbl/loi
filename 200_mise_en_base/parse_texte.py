@@ -562,8 +562,6 @@ infos_communes = [
 
 infos_communes_struct = [
     'VERSIONS',
-    'LIENS_ART',
-    'LIENS_SECTION_TA',
 ]
 
 infos_communes_version = [
@@ -579,6 +577,8 @@ infos_particulieres = [
 
 infos_particulieres_struct = [
     'URL',
+    'LIENS_ART',
+    'LIENS_SECTION_TA',
 ]
 
 infos_particulieres_version = [
