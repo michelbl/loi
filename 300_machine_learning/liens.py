@@ -165,7 +165,7 @@ def joli_affichage_liens(contenu_brut, liens):
 def representation_lien(contenu_brut, lien_positions, lien_contenus):
     return ' '.join(
         [
-            contenu if contenu else contenu_brut[mot[0]:mot[1]]
+            contenu if contenu else contenu_brut[mot[0]:mot[1]].lower()
             for mot, contenu in zip(lien_positions, lien_contenus)
         ]) + '\n'
 
