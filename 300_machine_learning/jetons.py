@@ -111,7 +111,7 @@ def separe_apostrophe(contenu_brut, position_mots, apostrophe):
 
 # Séparation de la ponctuation
 
-liste_ponctuation = ['.', ',', ';', ':', '!', '?', "'", '"', '(', ')', '[', ']', '«', '»']
+liste_ponctuation = {'.', ',', ';', ':', '!', '?', "'", '"', '(', ')', '[', ']', '«', '»'}
 
 def separe_ponctuation_mot(contenu_brut, debut, fin):
     nouveaux_mots = []
@@ -147,6 +147,22 @@ def separe_ponctuation(contenu_brut, position_mots):
     return nouveau_position_mots
 
 
+# Suppression des stop words
+
+liste_stop_words = {'le', 'la', 'les', 'l', "'", '’', 'de', 'des', 'du', 'un', 'une', 'au', 'à', 'aux'}
+
+def suppression_stop_words_paragraphe(contenu_brut, position_mots_dans_paragraphe):
+    return [(d, f) for d, f in position_mots_dans_paragraphe if contenu_brut[d:f] not in liste_stop_words]
+
+def suppression_stop_words(contenu_brut, position_mots):
+    nouveau_position_mots = []
+    for position_mots_dans_paragraphe in position_mots:
+        nouveau_position_mots.append(
+            suppression_stop_words_paragraphe(contenu_brut, position_mots_dans_paragraphe))
+        
+    return nouveau_position_mots
+
+
 # Transforme les numéros en jetons
 # Ceci permet de réduire la taille du vocabulaire en regroupant les nombres de même type.
 
@@ -154,7 +170,7 @@ def separe_ponctuation(contenu_brut, position_mots):
 
 def est_entier(v):
     for c in v:
-        if c not in ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9']:
+        if c not in {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9'}:
             return False
     if not v:
         return False
@@ -304,9 +320,9 @@ jetons.append(jeton_romain_minuscule)
 liste_est_numero.append(est_romain_maj)
 jetons.append(jeton_romain_majuscule)
 
-# Nombres arabes composés (ex: loi 2008-243, article L. 1223-6)
+# Nombres arabes composés (ex: loi 2008-243, article L. 1223-6-15)
 
-regex_arabe_comp = r'^\d+-\d+$'
+regex_arabe_comp = r'^\d+(-\d+)+$'
 
 jeton_arabe_comp = '__arabe_comp'
 
@@ -316,22 +332,21 @@ def est_arabe_comp(contenu_brut, debut, fin):
 liste_est_numero.append(est_arabe_comp)
 jetons.append(jeton_arabe_comp)
 
-# Numérotation code (ex: L. 1223-6, R. 1223-7, L1223-6, R1223-6)
-# Pour l'instant, la manière longue (X. DDD-DDD) n'est pas traitée (déjà __arabe_comp pour réduire la cardinalité)
+# Numérotation législative courte (ex: D111, L1223-6, R*1223-6-12 mais pas L. 1223-6, R. 1223-7)
 
-regex_num_article = r'^(L|R)\d+-\d+$'
+regex_num_courte = r'^(L|R|D)\*?\d+(-\d+)*$'
 
-jeton_num_article = '__num_article'
+jeton_num_courte = '__num_courte'
 
-def est_num_article(contenu_brut, debut, fin):
-    return est_regex(contenu_brut, debut, fin, regex_num_article)
+def est_num_courte(contenu_brut, debut, fin):
+    return est_regex(contenu_brut, debut, fin, regex_num_courte)
 
-liste_est_numero.append(est_num_article)
-jetons.append(jeton_num_article)
+liste_est_numero.append(est_num_courte)
+jetons.append(jeton_num_courte)
 
 # Adverbes multiplicatifs latins (bit, ter...)
 
-latins = [
+latins = {
     'bis',
     'ter',
     'quater',
@@ -354,16 +369,90 @@ latins = [
     'undevicies',
     'novodecies',
     'vicies',
-]
+}
 
 jeton_latin = '__latin'
 
-def est_latin(contenu_brut, debut, fin):
-    mot = contenu_brut[debut:fin]
-    return mot in latins
+# Adjectifs numéraux cardinaux français
 
-liste_est_numero.append(est_latin)
-jetons.append(jeton_latin)
+cardinal_fr = {
+    'deux',
+    'trois',
+    'quatre',
+    'cinq',
+    'six',
+    'sept',
+    'huit',
+    'neuf',
+    'dix',
+    'onze',
+    'douze',
+    'treize',
+    'quatorze',
+    'quinze',
+    'seize',
+    'dix-sept',
+    'dix-huit',
+    'dix-neuf',
+    'vingt',
+}
+
+jeton_cardinal_fr = '__cardinal_fr'
+
+def est_cardinal_fr(contenu_brut, debut, fin):
+    mot = contenu_brut[debut:fin]
+    return mot in cardinal_fr
+
+liste_est_numero.append(est_cardinal_fr)
+jetons.append(jeton_cardinal_fr)
+
+# Adjectifs numéraux ordinaux français
+
+ordinal_fr = {
+    '1er',
+    '1ere',
+    '1ère',
+    '2nd',
+    '2nde',
+    'premier',
+    'première',
+    'deuxième',
+    'second',
+    'seconde',
+    
+    'troisième',
+    'quatrième',
+    'cinquième',
+    'sixième',
+    'septième',
+    'huitième',
+    'neuvième',
+    'dixième',
+    'onzième',
+    'douzième',
+    'treizième',
+    'quatorzième',
+    'quinzième',
+    'seizième',
+    'dix-septième',
+    'dix-huitième',
+    'dix-neuvième',
+    'vingtième',
+    
+    'dernier',
+    'dernière',
+}
+
+regex_ordinal_fr = '^\d+(e|eme|ème)$'
+
+jeton_ordinal_fr = '__ordinal_fr'
+
+def est_ordinal_fr(contenu_brut, debut, fin):
+    mot = contenu_brut[debut:fin]
+    return (mot in ordinal_fr) or re.match(regex_ordinal_fr, mot)
+
+liste_est_numero.append(est_ordinal_fr)
+jetons.append(jeton_ordinal_fr)
 
 # Ordinaux ° (ex: 2°)
 
@@ -375,6 +464,50 @@ def est_ordinal_o(contenu_brut, debut, fin):
 
 liste_est_numero.append(est_ordinal_o)
 jetons.append(jeton_ordinal_o)
+
+
+# Lettres (ex: a, b, c... A, B, C...)
+# éviter 'l' qui est très courant
+
+lettres_min = {c for c in 'abcdefghijk'}
+lettres_maj = {c for c in 'ABCDEFGHIJK'}
+
+jeton_lettre_min = '__lettre_min'
+jeton_lettre_maj = '__lettre_maj'
+
+def est_lettre_min(contenu_brut, debut, fin):
+    mot = contenu_brut[debut:fin]
+    return mot in lettres_min
+
+def est_lettre_maj(contenu_brut, debut, fin):
+    mot = contenu_brut[debut:fin]
+    return mot in lettres_maj
+
+liste_est_numero.append(est_lettre_min)
+jetons.append(jeton_lettre_min)
+
+liste_est_numero.append(est_lettre_maj)
+jetons.append(jeton_lettre_maj)
+
+
+# Numérotation législative longue (ex: L. 1223, R*. 1223-7-1)
+
+regex_prefixe = r'^(L|R|D)\*?$'
+
+jeton_num_longue = '__num_longue'
+
+def est_num_longue(contenu_brut, mots):
+    d, f = mots[0]
+    mot_prefixe = contenu_brut[d:f]
+    if re.match(regex_prefixe, mot_prefixe):
+        d, f = mots[1]
+        mot_point = contenu_brut[d:f]
+        if mot_point == '.':
+            d, f = mots[2]
+            mot_num_courte = contenu_brut[d:f]
+            if est_entier(mot_num_courte) or re.match(regex_arabe_comp, mot_num_courte):
+                return True
+    return False
 
 
 # Pipeline
@@ -391,10 +524,13 @@ def transformation_jetons(contenu_brut):
     
     position_mots = separe_ponctuation(contenu_brut, position_mots)
     
+    position_mots = suppression_stop_words(contenu_brut, position_mots)
+    
     contenu_mots = [[None] * len(l) for l in position_mots]
     
-    nouvelles_positions, nouveaux_contenus = passe(contenu_brut, position_mots, contenu_mots, 3, est_date, jeton_date)
+    position_mots, contenu_mots = passe(contenu_brut, position_mots, contenu_mots, 3, est_date, jeton_date)
+    position_mots, contenu_mots = passe(contenu_brut, position_mots, contenu_mots, 3, est_num_longue, jeton_num_longue)
     
-    nouveaux_contenus = passe_bijective(contenu_brut, nouvelles_positions, nouveaux_contenus, liste_est_numero, jetons)
+    contenu_mots = passe_bijective(contenu_brut, position_mots, contenu_mots, liste_est_numero, jetons)
     
-    return nouvelles_positions, nouveaux_contenus
+    return position_mots, contenu_mots
