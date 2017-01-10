@@ -2,6 +2,101 @@ import xml.etree.ElementTree as ElementTree
 import re
 
 import psycopg2
+from unidecode import unidecode
+
+
+jetons_importants = {
+    '__date',
+    '__num_longue',
+    '__arabe',
+    '__romain_min',
+    '__romain_maj',
+    '__arabe_comp',
+    '__num_courte',
+    '__latin',
+    '__lettre_min',
+    '__lettre_maj',
+    '__ordinal_o',
+    '__cardinal_fr',
+    '__ordinal_fr',
+}
+
+mots_importants = {unidecode(m) for m in {
+    
+    'loi',
+    'lois',
+    'organique',
+    'organiques',
+    'décret',
+    'décrets',
+    'code',
+    'codes',
+    'avenant',
+    'avenants',
+    'circulaire',
+    'circulaires',
+    'arrêté',
+    'arrêtés',
+    'règlement',
+    'règlements',
+
+    'partie',
+    'parties',
+    'livre',
+    'livres',
+    'titre',
+    'titres',
+    'chapitre',
+    'chapitres',
+    'section',
+    'sections',
+    'article',
+    'articles',
+    'alinea',
+    'alineas',
+    'alinéa',
+    'alinéas',
+    'annexe',
+    'annexes',
+
+    'susvisé',
+    'susvisés',
+    'susvisée',
+    'susvisées',
+    'précité',
+    'précités',
+    'précitée',
+    'précitées',
+    'modifié',
+    'modifiés',
+    'modifiée',
+    'modifiées',
+    'relatif',
+    'relatifs',
+    'relative',
+    'relatives',
+    'modificatif',
+    'modificatifs',
+    'modificative',
+    'modificatives',
+
+    'présent',
+    'présents',
+    'présente',
+    'présentes',
+    'précédent',
+    'précédents',
+    'précédente',
+    'précédentes',
+    'suivant',
+    'suivants',
+    'suivante',
+    'suivantes',
+    
+    'no',
+    'n°',
+}}
+
 
 
 # Trouve le contenu d'un article
@@ -43,7 +138,7 @@ def separation(contenu_brut, patron):
     return position_paragraphes, liste_paragraphe
 
 def suppression_HTML(contenu_brut):
-    return separation(contenu_brut, '<[^<]+?>')
+    return separation(contenu_brut, '(?<!<)<[^<]+?>')
 
 
 # Séparation en paragraphes
@@ -149,7 +244,7 @@ def separe_ponctuation(contenu_brut, position_mots):
 
 # Suppression des stop words
 
-liste_stop_words = {'le', 'la', 'les', 'l', "'", '’', 'de', 'des', 'du', 'un', 'une', 'au', 'à', 'aux'}
+liste_stop_words = {'le', 'la', 'les', 'l', "'", '’', 'de', 'des', 'du', 'un', 'une', 'au', 'aux'}
 
 def suppression_stop_words_paragraphe(contenu_brut, position_mots_dans_paragraphe):
     return [(d, f) for d, f in position_mots_dans_paragraphe if contenu_brut[d:f] not in liste_stop_words]
